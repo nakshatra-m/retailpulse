@@ -32,3 +32,9 @@ airflow/airflow.db
 
 # Jupyter
 .ipynb_checkpoints/
+
+
+# Generated data
+data/raw/
+data/processed/
+data/archive/
