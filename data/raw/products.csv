@@ -1,0 +1,11 @@
+product_id,product_name,category,brand,supplier,price
+P001,Milk,Grocery,Lactantia,Agropur,4.99
+P002,Bread,Grocery,Wonder,Weston Foods,3.49
+P003,Eggs,Grocery,Burnbrae Farms,Burnbrae Farms,5.99
+P004,Laptop,Electronics,Dell,Tech Data,999.99
+P005,Monitor,Electronics,LG,Ingram Micro,299.99
+P006,Keyboard,Electronics,Logitech,Logitech Canada,79.99
+P007,Gaming Mouse,Electronics,Razer,Razer Canada,89.99
+P008,Coffee Maker,Home,Breville,Breville Canada,149.99
+P009,Winter Jacket,Clothing,Columbia,Northern Outfitters,149.99
+P010,Running Shoes,Sports,Nike,Nike Canada,129.99
