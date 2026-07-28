@@ -1,0 +1,9 @@
+store_id,store_name,city,province,opening_date
+S001,RetailPulse Toronto,Toronto,Ontario,2020-05-10
+S002,RetailPulse Mississauga,Mississauga,Ontario,2021-03-15
+S003,RetailPulse Brampton,Brampton,Ontario,2021-08-20
+S004,RetailPulse Hamilton,Hamilton,Ontario,2022-01-12
+S005,RetailPulse Ottawa,Ottawa,Ontario,2022-06-01
+S006,RetailPulse Calgary,Calgary,Alberta,2023-02-18
+S007,RetailPulse Edmonton,Edmonton,Alberta,2023-07-25
+S008,RetailPulse Vancouver,Vancouver,British Columbia,2024-04-05
