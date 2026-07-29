@@ -47,11 +47,13 @@ def generate_customers(count=10000):
 
             "email": fake.email(),
 
+            "phone": fake.phone_number(),
+
             "city": city,
 
             "province": province,
 
-            "signup_date": fake.date_between(
+            "created_date": fake.date_between(
                 start_date="-5y",
                 end_date="today"
             ),

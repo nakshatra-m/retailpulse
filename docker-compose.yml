@@ -1,0 +1,18 @@
+services:
+  postgres:
+    image: postgres:16
+    container_name: retailpulse-postgres
+
+    environment:
+      POSTGRES_USER: retailpulse
+      POSTGRES_PASSWORD: retailpulse123
+      POSTGRES_DB: retailpulse
+
+    ports:
+      - "5432:5432"
+
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+volumes:
+  postgres_data:
