@@ -1,46 +1,110 @@
-import pandas as pd
 import random
 from pathlib import Path
+import pandas as pd
 
 
-OUTPUT_PATH=Path("data/raw")
+BASE_DIR = Path(__file__).resolve().parents[2]
+
+OUTPUT_PATH = BASE_DIR / "data" / "raw"
 
 
 
 def generate_returns():
 
-    orders=pd.read_csv(
+    orders = pd.read_csv(
         OUTPUT_PATH/"orders.csv"
+    )
+
+
+    order_items = pd.read_csv(
+        OUTPUT_PATH/"order_items.csv"
     )
 
 
     returns=[]
 
 
-    selected=orders.sample(
-        frac=0.05
+    reasons=[
+
+        "Damaged",
+
+        "Wrong Item",
+
+        "Defective",
+
+        "Changed Mind"
+
+    ]
+
+
+    selected = orders.sample(
+        frac=0.05,
+        random_state=42
     )
 
 
-    for i,(_,row) in enumerate(selected.iterrows()):
+    counter=1
+
+
+    for _,order in selected.iterrows():
+
+
+        items = order_items[
+            order_items.order_id ==
+            order.order_id
+        ]
+
+
+        product = items.sample(
+            1
+        ).iloc[0]
+
+
+        return_date = (
+            pd.to_datetime(order.order_date)
+            +
+            pd.Timedelta(
+                days=random.randint(1,30)
+            )
+        )
 
 
         returns.append({
 
-            "return_id":f"R{i+1:05}",
+            "return_id":
+                f"R{counter:05}",
 
-            "order_id":row.order_id,
 
-            "return_reason":random.choice(
-                [
-                    "Damaged",
-                    "Wrong Size",
-                    "Defective",
-                    "Changed Mind"
-                ]
-            )
+            "order_id":
+                order.order_id,
+
+
+            "product_id":
+                product.product_id,
+
+
+            "return_date":
+                return_date.date(),
+
+
+            "reason":
+                random.choice(reasons),
+
+
+            "refund_amount":
+                round(
+                    random.uniform(
+                        20,
+                        order.total_amount
+                    ),
+                    2
+                )
 
         })
+
+
+        counter+=1
+
 
 
     pd.DataFrame(returns).to_csv(
@@ -54,4 +118,5 @@ def generate_returns():
 
 
 if __name__=="__main__":
+
     generate_returns()
