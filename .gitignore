@@ -9,6 +9,8 @@ __pycache__/
 
 # Environment variables
 .env
+.env.*
+!.env.example
 
 # Logs
 logs/
@@ -25,16 +27,26 @@ Thumbs.db
 # Data
 data/processed/
 data/archive/
+data/raw/
 
 # Airflow
 airflow/logs/
 airflow/airflow.db
+airflow/**/__pycache__/
+airflow/**/*.pyc
+
+# Airflow credentials
+airflow/config/simple_auth_manager_passwords.json
 
 # Jupyter
 .ipynb_checkpoints/
 
+# Build
+build/
+dist/
+*.egg-info/
 
-# Generated data
-data/raw/
-data/processed/
-data/archive/
+# Test
+.pytest_cache/
+.coverage
+htmlcov/

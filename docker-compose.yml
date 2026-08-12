@@ -1,12 +1,19 @@
+name: retailpulse
+
 services:
+
+  # ============================================================
+  # RETAILPULSE POSTGRESQL DATABASE
+  # ============================================================
+
   postgres:
     image: postgres:16
     container_name: retailpulse-postgres
 
     environment:
+      POSTGRES_DB: retailpulse
       POSTGRES_USER: retailpulse
       POSTGRES_PASSWORD: retailpulse123
-      POSTGRES_DB: retailpulse
 
     ports:
       - "5432:5432"
@@ -14,5 +21,233 @@ services:
     volumes:
       - postgres_data:/var/lib/postgresql/data
 
+    networks:
+      - retailpulse
+
+
+  # ============================================================
+  # AIRFLOW POSTGRESQL DATABASE
+  # ============================================================
+
+  airflow-postgres:
+    image: postgres:16
+    container_name: retailpulse-airflow-postgres
+
+    environment:
+      POSTGRES_DB: airflow
+      POSTGRES_USER: airflow
+      POSTGRES_PASSWORD: airflow
+
+    volumes:
+      - airflow_postgres_data:/var/lib/postgresql/data
+
+    networks:
+      - retailpulse
+
+
+  # ============================================================
+  # AIRFLOW INITIALIZATION
+  # ============================================================
+
+  airflow-init:
+    image: apache/airflow:3.0.4
+
+    depends_on:
+      airflow-postgres:
+        condition: service_started
+
+    environment:
+      AIRFLOW__CORE__AUTH_MANAGER: airflow.api_fastapi.auth.managers.simple.simple_auth_manager.SimpleAuthManager
+
+      AIRFLOW__CORE__EXECUTOR: LocalExecutor
+
+      AIRFLOW__CORE__LOAD_EXAMPLES: "false"
+
+      AIRFLOW__CORE__SIMPLE_AUTH_MANAGER_PASSWORDS_FILE: /opt/airflow/config/simple_auth_manager_passwords.json
+
+      AIRFLOW__CORE__SIMPLE_AUTH_MANAGER_USERS: "admin:admin"
+
+      AIRFLOW__DATABASE__SQL_ALCHEMY_CONN: postgresql+psycopg2://airflow:airflow@airflow-postgres:5432/airflow
+
+      AIRFLOW__API_AUTH__JWT_SECRET: retailpulse-airflow-jwt-secret-2026
+
+      # Python import path
+      PYTHONPATH: /opt/airflow
+
+      # RetailPulse PostgreSQL connection
+      POSTGRES_DB: retailpulse
+      POSTGRES_HOST: host.docker.internal
+      POSTGRES_PASSWORD: retailpulse123
+      POSTGRES_PORT: "5432"
+      POSTGRES_USER: retailpulse
+
+    command:
+      - bash
+      - -c
+      - |
+        pip install --no-cache-dir -r /opt/airflow/airflow-requirements.txt
+        airflow db migrate
+
+    volumes:
+      - ./airflow/dags:/opt/airflow/dags
+      - ./airflow/logs:/opt/airflow/logs
+      - ./airflow/plugins:/opt/airflow/plugins
+      - ./airflow/config:/opt/airflow/config
+      - ./airflow/requirements.txt:/opt/airflow/airflow-requirements.txt
+      - ./src:/opt/airflow/src
+      - ./sql:/opt/airflow/sql
+      - ./data:/opt/airflow/data
+
+    networks:
+      - retailpulse
+
+
+  # ============================================================
+  # AIRFLOW API SERVER
+  # ============================================================
+
+  airflow-api-server:
+    image: apache/airflow:3.0.4
+
+    depends_on:
+      airflow-init:
+        condition: service_completed_successfully
+
+      airflow-postgres:
+        condition: service_started
+
+    environment:
+      AIRFLOW__CORE__AUTH_MANAGER: airflow.api_fastapi.auth.managers.simple.simple_auth_manager.SimpleAuthManager
+
+      AIRFLOW__CORE__EXECUTION_API_SERVER_URL: http://airflow-api-server:8080/execution/
+
+      AIRFLOW__CORE__EXECUTOR: LocalExecutor
+
+      AIRFLOW__CORE__LOAD_EXAMPLES: "false"
+
+      AIRFLOW__CORE__SIMPLE_AUTH_MANAGER_PASSWORDS_FILE: /opt/airflow/config/simple_auth_manager_passwords.json
+
+      AIRFLOW__CORE__SIMPLE_AUTH_MANAGER_USERS: "admin:admin"
+
+      AIRFLOW__DATABASE__SQL_ALCHEMY_CONN: postgresql+psycopg2://airflow:airflow@airflow-postgres:5432/airflow
+
+      AIRFLOW__API_AUTH__JWT_SECRET: retailpulse-airflow-jwt-secret-2026
+
+      # Python import path
+      PYTHONPATH: /opt/airflow
+
+      # RetailPulse PostgreSQL connection
+      POSTGRES_DB: retailpulse
+      POSTGRES_HOST: host.docker.internal
+      POSTGRES_PASSWORD: retailpulse123
+      POSTGRES_PORT: "5432"
+      POSTGRES_USER: retailpulse
+
+    command:
+      - bash
+      - -c
+      - |
+        pip install --no-cache-dir -r /opt/airflow/airflow-requirements.txt
+        airflow api-server --host 0.0.0.0 --port 8080
+
+    ports:
+      - "8080:8080"
+
+    volumes:
+      - ./airflow/dags:/opt/airflow/dags
+      - ./airflow/logs:/opt/airflow/logs
+      - ./airflow/plugins:/opt/airflow/plugins
+      - ./airflow/config:/opt/airflow/config
+      - ./airflow/requirements.txt:/opt/airflow/airflow-requirements.txt
+      - ./src:/opt/airflow/src
+      - ./sql:/opt/airflow/sql
+      - ./data:/opt/airflow/data
+
+    networks:
+      - retailpulse
+
+
+  # ============================================================
+  # AIRFLOW SCHEDULER
+  # ============================================================
+
+  airflow-scheduler:
+    image: apache/airflow:3.0.4
+
+    depends_on:
+      airflow-api-server:
+        condition: service_started
+
+      airflow-init:
+        condition: service_completed_successfully
+
+      airflow-postgres:
+        condition: service_started
+
+    environment:
+      AIRFLOW__CORE__AUTH_MANAGER: airflow.api_fastapi.auth.managers.simple.simple_auth_manager.SimpleAuthManager
+
+      AIRFLOW__CORE__EXECUTION_API_SERVER_URL: http://airflow-api-server:8080/execution/
+
+      AIRFLOW__CORE__EXECUTOR: LocalExecutor
+
+      AIRFLOW__CORE__LOAD_EXAMPLES: "false"
+
+      AIRFLOW__CORE__SIMPLE_AUTH_MANAGER_PASSWORDS_FILE: /opt/airflow/config/simple_auth_manager_passwords.json
+
+      AIRFLOW__CORE__SIMPLE_AUTH_MANAGER_USERS: "admin:admin"
+
+      AIRFLOW__DATABASE__SQL_ALCHEMY_CONN: postgresql+psycopg2://airflow:airflow@airflow-postgres:5432/airflow
+
+      AIRFLOW__API_AUTH__JWT_SECRET: retailpulse-airflow-jwt-secret-2026
+
+      # Python import path
+      PYTHONPATH: /opt/airflow
+
+      # RetailPulse PostgreSQL connection
+      POSTGRES_DB: retailpulse
+      POSTGRES_HOST: host.docker.internal
+      POSTGRES_PASSWORD: retailpulse123
+      POSTGRES_PORT: "5432"
+      POSTGRES_USER: retailpulse
+
+    command:
+      - bash
+      - -c
+      - |
+        pip install --no-cache-dir -r /opt/airflow/airflow-requirements.txt
+        airflow scheduler
+
+    volumes:
+      - ./airflow/dags:/opt/airflow/dags
+      - ./airflow/logs:/opt/airflow/logs
+      - ./airflow/plugins:/opt/airflow/plugins
+      - ./airflow/config:/opt/airflow/config
+      - ./airflow/requirements.txt:/opt/airflow/airflow-requirements.txt
+      - ./src:/opt/airflow/src
+      - ./sql:/opt/airflow/sql
+      - ./data:/opt/airflow/data
+
+    networks:
+      - retailpulse
+
+
+  # ============================================================
+  # NETWORK
+  # ============================================================
+
+networks:
+  retailpulse:
+    name: retailpulse_default
+
+
+  # ============================================================
+  # VOLUMES
+  # ============================================================
+
 volumes:
   postgres_data:
+    name: retailpulse_postgres_data
+
+  airflow_postgres_data:
+    name: retailpulse_airflow_postgres_data

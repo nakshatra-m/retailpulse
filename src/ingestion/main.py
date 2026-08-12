@@ -20,7 +20,7 @@ from ingestion.load_returns import load_returns
 
 
 
-def load_all():
+def main():
 
     print("\nStarting full ingestion pipeline...\n")
 
@@ -48,4 +48,4 @@ def load_all():
 
 if __name__ == "__main__":
 
-    load_all()
+    main()
