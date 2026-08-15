@@ -147,74 +147,108 @@ I also added validation and reconciliation checks so that the numbers shown in P
 
 ## Project Structure
 
+### `.github/`
+Contains GitHub-related configuration and workflow files.
 
-retailpulse/
-│
-├── .github/
-│
-├── airflow/
-│   ├── dags/
-│   │   └── retailpulse_pipeline.py
-│   ├── Dockerfile
-│   └── requirements.txt
-│
-├── dashboard/
-│   └── retail pulse analysis.pbix
-│
-├── data/
-│   ├── processed/
-│   └── raw/
-│
-├── docs/
-│
-├── logs/
-│
-├── notebooks/
-│
-├── sql/
-│   ├── analytics.sql
-│   ├── schema.sql
-│   ├── transformations.sql
-│   └── validation.sql
-│
-├── src/
-│   ├── analytics/
-│   │   ├── analytics.py
-│   │   └── analytics_validation.py
-│   ├── config/
-│   │   ├── config.py
-│   │   └── database.py
-│   ├── generator/
-│   │   ├── customer_generator.py
-│   │   ├── inventory_generator.py
-│   │   ├── main.py
-│   │   ├── order_generator.py
-│   │   ├── product_generator.py
-│   │   ├── promotion_generator.py
-│   │   ├── returns_generator.py
-│   │   └── store_generator.py
-│   ├── ingestion/
-│   │   ├── load_customers.py
-│   │   ├── load_inventory.py
-│   │   ├── load_orders.py
-│   │   ├── load_order_items.py
-│   │   ├── load_products.py
-│   │   ├── load_promotions.py
-│   │   ├── load_returns.py
-│   │   ├── load_stores.py
-│   │   └── main.py
-│   ├── transformations/
-│   │   └── transform.py
-│   └── validation/
-│       └── validation.py
-│
-├── tests/
-│
-├── docker-compose.yml
-├── requirements.txt
-├── README.md
-└── .gitignore
+### `airflow/`
+Contains the Apache Airflow orchestration setup.
 
+- `dags/retailpulse_pipeline.py` — Main Airflow DAG that orchestrates the pipeline.
+- `Dockerfile` — Docker configuration for the Airflow environment.
+- `requirements.txt` — Python dependencies required by Airflow.
+
+### `dashboard/`
+Contains the Power BI dashboard.
+
+- `retail pulse analysis.pbix` — Final Power BI report containing the retail analytics dashboard and KPI measures.
+
+### `data/`
+Contains the datasets used throughout the project.
+
+- `raw/` — Generated raw CSV datasets before processing.
+- `processed/` — Processed datasets produced during the pipeline.
+
+### `docs/`
+Contains project documentation, development notes, database documentation, and screenshots.
+
+### `logs/`
+Contains runtime and Airflow execution logs generated during development and testing.
+
+### `notebooks/`
+Contains notebooks used for exploratory analysis and development.
+
+### `sql/`
+Contains the SQL logic used throughout the database and analytics layers.
+
+- `schema.sql` — Defines the PostgreSQL database schema.
+- `analytics.sql` — Contains analytics queries and analytical table logic.
+- `transformations.sql` — Contains SQL transformations used to prepare reporting data.
+- `validation.sql` — Contains SQL validation and data-quality checks.
+
+### `src/`
+Contains the main Python application code.
+
+#### `src/analytics/`
+Contains analytics calculations and analytics validation logic.
+
+- `analytics.py` — Builds and processes analytical datasets.
+- `analytics_validation.py` — Performs checks on analytical results.
+
+#### `src/config/`
+Contains project and database configuration.
+
+- `config.py` — Application configuration.
+- `database.py` — PostgreSQL database connection setup.
+
+#### `src/generator/`
+Generates the synthetic retail data used by the project.
+
+- `customer_generator.py` — Generates customer data.
+- `inventory_generator.py` — Generates inventory data.
+- `main.py` — Main entry point for data generation.
+- `order_generator.py` — Generates order data.
+- `product_generator.py` — Generates product data.
+- `promotion_generator.py` — Generates promotion data.
+- `returns_generator.py` — Generates return data.
+- `store_generator.py` — Generates store data.
+
+#### `src/ingestion/`
+Loads the generated CSV files into PostgreSQL.
+
+- `load_customers.py` — Loads customer data.
+- `load_inventory.py` — Loads inventory data.
+- `load_orders.py` — Loads order data.
+- `load_order_items.py` — Loads order-item data.
+- `load_products.py` — Loads product data.
+- `load_promotions.py` — Loads promotion data.
+- `load_returns.py` — Loads return data.
+- `load_stores.py` — Loads store data.
+- `main.py` — Main ingestion entry point.
+
+#### `src/transformations/`
+Contains Python-based transformation logic.
+
+- `transform.py` — Runs the required data transformations.
+
+#### `src/validation/`
+Contains data-quality validation logic.
+
+- `validation.py` — Validates the loaded data and checks expected results.
+
+### `tests/`
+Contains project test files.
+
+### `docker-compose.yml`
+Defines the Docker services used to run the project's infrastructure.
+
+### `requirements.txt`
+Contains the Python dependencies required by the project.
+
+### `README.md`
+Contains the project overview, architecture, setup instructions, pipeline explanation, challenges, and documentation.
+
+### `.gitignore`
+Defines files and folders that should not be committed to Git, including environment files, virtual environments, cache files, and generated runtime files.
 
 The repository also contains local development folders such as `.venv/` and generated Airflow logs. These are environment or runtime files rather than part of the application logic and are excluded from the portfolio structure above.
 
